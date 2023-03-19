@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Driving Game</title>
+  <style>
+    canvas {
+      display: block;
+      margin: 0 auto;
+      background-color: lightgrey;
+    }
+    button {
+      display: inline-block;
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" width="800" height="600"></canvas>
+  <div>
+    <button id="leftButton">Left</button>
+    <button id="rightButton">Right</button>
+  </div>
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const carWidth = 50;
+    const carHeight = 100;
+    let carX = (canvas.width - carWidth) / 2;
+    const carSpeed = 5;
+
+    const roadLineWidth = 10;
+    const roadLineHeight = 50;
+    const roadLineSpacing = 30;
+    const roadLineSpeed = 2;
+    let roadLineY = 0;
+
+    function drawCar() {
+      ctx.beginPath();
+      ctx.rect(carX, canvas.height - carHeight, carWidth, carHeight);
+      ctx.fillStyle = 'red';
+      ctx.fill();
+      ctx.closePath();
+    }
+
+    function drawRoadLine(x) {
+      ctx.beginPath();
+      ctx.setLineDash([roadLineHeight, roadLineSpacing]);
+      ctx.moveTo(x, roadLineY);
+      ctx.lineTo(x, canvas.height);
+      ctx.lineWidth = roadLineWidth;
+      ctx.strokeStyle = 'white';
+      ctx.stroke();
+      ctx.closePath();
+      ctx.setLineDash([]);
+    }
+
+    function drawRoad() {
+      const roadLineX = canvas.width / 2;
+      drawRoadLine(roadLineX);
+    }
+
+    function updateRoad() {
+      roadLineY += roadLineSpeed;
+      if (roadLineY > roadLineHeight + roadLineSpacing) {
+        roadLineY = 0;
+      }
+    }
+
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function moveCarLeft() {
+      carX -= carSpeed;
+      if (carX < 0) {
+        carX = 0;
+      }
+    }
+
+    function moveCarRight() {
+      carX += carSpeed;
+      if (carX + carWidth > canvas.width) {
+        carX = canvas.width - carWidth;
+      }
+    }
+
+    document.getElementById('leftButton').addEventListener('click', moveCarLeft);
+    document.getElementById('rightButton').addEventListener('click', moveCarRight);
+
+    function gameLoop() {
+      clearCanvas();
+      updateRoad();
+      drawRoad();
+      drawCar();
+      requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+  </script>
+</body>
+</html>
